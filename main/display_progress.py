@@ -1,17 +1,15 @@
-
 import math
 import os
 import time
+PROGRESS_FORMAT = """
+╭━━━━━━❰ᴘʀᴏɢʀᴇss ʙᴀʀ❱━━━━➣
+┣⪼ 🗂️ : {0}
+┣⪼ 📦 : {1} of {1}
+┣⪼ 🚀 : {3}/s
+┣⪼ ⏱️ : {4}
+╰━━━━━━━━━━━━━━━━━━━━━━━➣ """
 
-
-
-def progress_bar(
-    current,
-    total,
-    ud_type,
-    message,
-    start
-):
+def progress_bar(current,total,ud_type,message,start):
     now = time.time()
     diff = now - start
     if round(diff % 10.00) == 0 or current == total:
@@ -25,27 +23,21 @@ def progress_bar(
         elapsed_time = TimeFormatter(milliseconds=elapsed_time)
         estimated_total_time = TimeFormatter(milliseconds=estimated_total_time)
 
-        progress = "[{0}{1}] | {2}%\n".format(
+        progress = "[{0}{1}] | {2}%".format(
             ''.join(["■" for i in range(math.floor(percentage / 10))]),
             ''.join(["□" for i in range(10 - math.floor(percentage / 10))]),
             round(percentage, 2))
 
-        tmp = progress + "{0} of {1}\n**Speed**: {2}/s\n**ETA**: {3}\n".format(
+        mxt = PROGRESS_FORMAT.format(
+            progressbar,
             humanbytes(current),
             humanbytes(total),
             humanbytes(speed),
             # elapsed_time if elapsed_time != '' else "0 s",
             estimated_total_time if estimated_total_time != '' else "0 s"
         )
-        try:
-             message.edit(
-                text="Uploading -> **{}**\n {}".format(
-                    ud_type,
-                    tmp
-                )
-            )
-        except:
-            pass
+        try:message.edit(text="Uploading -> **{}**\n {}".format(ud_type,mxt))
+        except:pass
 
 
 def humanbytes(size):
@@ -58,7 +50,6 @@ def humanbytes(size):
         size /= power
         n += 1
     return str(round(size, 2)) + " " + Dic_powerN[n] + 'B'
-
 
 def TimeFormatter(milliseconds: int) -> str:
     seconds, milliseconds = divmod(int(milliseconds), 1000)
